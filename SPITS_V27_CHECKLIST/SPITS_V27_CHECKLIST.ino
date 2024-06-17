@@ -1455,6 +1455,9 @@ void Install_Testsuite() {
   if (TestsuiteChecker.ding()) {
     if (Testsuite_Success == true) {
       Serial.println("ALLE FLAGS GEVONDEN!");
+      sendData(capturedIMEI, capturedICCID, capturedFirmware, capturedVbatt, capturedRTC_con, 
+           capturedFlash_con, capturedNetwork, capturedRevision, capturedIMSI, capturedRTC_sync, 
+           capturedSHT20, capturedVB86, capturedKlay, deviceType);
       Serial.print(Tests);
       Serial.print(" ");
       Serial.println(TestsuiteFlagArrayOK);
