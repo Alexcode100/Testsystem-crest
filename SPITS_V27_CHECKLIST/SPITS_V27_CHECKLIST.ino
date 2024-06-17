@@ -30,6 +30,22 @@ String SHT20;
 String VB86;
 String Klay;
 
+//Database Strings
+String capturedIMEI = "";
+String capturedICCID = "";
+String capturedFirmware = "";
+String capturedVbatt = "";
+String capturedRTC_con = "";
+String capturedFlash_con = "";
+String capturedNetwork = "";
+String capturedRevision = "";
+String capturedIMSI = "";
+String capturedRTC_sync = "";
+String capturedSHT20 = "";
+String capturedVB86 = "";
+String capturedKlay = "";
+String deviceType = WiFi.macAddress();
+
 // Arrays voor opslag van binnenkomende data
 const byte numChars = 200;
 char receivedChars[numChars];   
@@ -1118,8 +1134,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (Firmware == "EEPROM W") {
       Firmware = RTU_String.substring(10, 15);
       Serial.println("FIRMWARE FOUND!");
-//      Serial.println(Firmware);
       Firmware.toCharArray(Firmware_buf, 40);
+      capturedFirmware = Firmware; // Capture the Firmware value
       TestsuiteFlagArray[0] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1128,8 +1144,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (Vbatt == "Vbatt") {
       Vbatt = RTU_String.substring(19, 23);
       Serial.println("VBATT FOUND!");
-//      Serial.println(Vbatt);
       Vbatt.toCharArray(Vbatt_buf, 40);
+      capturedVbatt = Vbatt; // Capture the Vbatt value
       TestsuiteFlagArray[1] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1138,8 +1154,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (RTC_con == "RTC Con : SUCCESS") {
       RTC_con = RTU_String.substring(21, 28);
       Serial.println("RTC_CON FOUND!");
-//      Serial.println(RTC_con);
       RTC_con.toCharArray(RTC_con_buf, 40);
+      capturedRTC_con = RTC_con; // Capture the RTC_con value
       TestsuiteFlagArray[2] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1148,8 +1164,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (Flash_con == "FlashCon: SUCCESS") {
       Flash_con = RTU_String.substring(21, 28);
       Serial.println("FLASH_CON FOUND!");
-//      Serial.println(Flash_con);
       Flash_con.toCharArray(Flash_con_buf, 40);
+      capturedFlash_con = Flash_con; // Capture the Flash_con value
       TestsuiteFlagArray[3] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1158,8 +1174,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (Network == "Telecom : SUCCESS") {
       Network = RTU_String.substring(21, 32);
       Serial.println("NETWORK FOUND!");
-//      Serial.println(Network);
       Network.toCharArray(Network_buf, 40);
+      capturedNetwork = Network; // Capture the Network value
       if (NetworkFilter == true) {
         TestsuiteFlagArray[4] = 1;
         Serial.print("Tests: ");
@@ -1167,24 +1183,25 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
         NetworkFilter = false;
       }
     }
-    
+
     if (Prog_VB86 == true || Prog_Klay == true) {
       if (Revision == "Revision") {
         Revision = RTU_String.substring(11, 40);
         if (Revision == "BC95GVBAR02A03") {
           Revision.toCharArray(Revision_buf, 40);
           Serial.println("REVISION FOUND!");
-  //        Serial.println(Revision);
+          capturedRevision = Revision; // Capture the Revision value
           TestsuiteFlagArray[5] = 1;
           Serial.print("Tests: ");
           Serial.println(Tests);
         }
       }
     }
-    
+
     if (Prog_VB86 == false && Prog_Klay == false && Revision == "Revision") {
       Revision = RTU_String.substring(11, 40);
       Revision.toCharArray(Revision_buf, 40);
+      capturedRevision = Revision; // Capture the Revision value
       TestsuiteFlagArray[5] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1193,8 +1210,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (IMEI == "IMEI") {
       IMEI = RTU_String.substring(8, 23);
       Serial.println("IMEI FOUND!");
-//      Serial.println(IMEI);
       IMEI.toCharArray(IMEI_buf, 40); // Tijdelijke opslag zodat IMEI pas na RTC uitgeprint wordt
+      capturedIMEI = IMEI; // Capture the IMEI value here
       TestsuiteFlagArray[6] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1203,8 +1220,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (IMSI == "IMSI") {
       IMSI = RTU_String.substring(8, 23);
       Serial.println("IMSI FOUND!");
-//      Serial.println(IMSI);
       IMSI.toCharArray(IMSI_buf, 40);
+      capturedIMSI = IMSI; // Capture the IMSI value
       TestsuiteFlagArray[7] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1213,8 +1230,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (ICCID == "ICCID") {
       ICCID = RTU_String.substring(9, 29);
       Serial.println("ICCID FOUND!");
-//      Serial.println(ICCID);
       ICCID.toCharArray(ICCID_buf, 40);
+      capturedICCID = ICCID; // Capture the ICCID value
       TestsuiteFlagArray[8] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1228,8 +1245,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (RTC_sync == "RTC Sync: SUCCESS") {
       RTC_sync = RTU_String.substring(21, 28);
       Serial.println("RTC_SYNC FOUND!");
-//      Serial.println(RTC_sync);
       RTC_sync.toCharArray(RTC_sync_buf, 40);
+      capturedRTC_sync = RTC_sync; // Capture the RTC_sync value
       TestsuiteFlagArray[9] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1238,8 +1255,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (SHT20 == "SHT20\t: SUCCESS") {
       SHT20 = RTU_String.substring(19, 26);
       Serial.println("SHT20 FOUND!");
-//      Serial.println(SHT20);
       SHT20.toCharArray(SHT20_buf, 40);
+      capturedSHT20 = SHT20; // Capture the SHT20 value
       TestsuiteFlagArray[10] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1248,8 +1265,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (VB86 == "VB86\t: SUCCESS") {
       VB86 = RTU_String.substring(29, 37);
       Serial.println("VB86 FOUND!");
-//      Serial.println(VB86);
       VB86.toCharArray(VB86_buf, 40);
+      capturedVB86 = VB86; // Capture the VB86 value
       TestsuiteFlagArray[11] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1258,8 +1275,8 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (Klay == "Klay\t: SUCCESS") {
       Klay = RTU_String.substring(29, 37);
       Serial.println("KLAY FOUND!");
-//    Serial.println(Klay);
       Klay.toCharArray(Klay_buf, 40);
+      capturedKlay = Klay; // Capture the Klay value
       TestsuiteFlagArray[11] = 1;
       Serial.print("Tests: ");
       Serial.println(Tests);
@@ -1268,19 +1285,20 @@ void RTU_scan() { // Hier wordt de RTU-output gescand op zoektermen
     if (Prog_VB86 == false && Prog_Klay == false) {
       TestsuiteFlagArray[11] = 1;
     }
-    
+
     Tests = "";
     for (int i = 0; i < 12; i++) {
       Tests += String(TestsuiteFlagArray[i]);
     }
 
-    if (Tests.compareTo(TestsuiteFlagArrayOK)== 0) {
+    if (Tests.compareTo(TestsuiteFlagArrayOK) == 0) {
       Testsuite_Success = true;
     }
-    
+
     newData = false;
   }
 }
+
 
 void UPR_scan() { // Hier wordt de RTU-output gescand op zoektermen
   if (newData2 == true) {
