@@ -8,6 +8,8 @@
 #include "blinker.h"
 #include "USB.h"
 #include "USBHIDKeyboard.h"
+#include "HTTPClient.h"
+#include "database.h"
 
 // Zoektermen
 // Init
@@ -115,6 +117,9 @@ const char* password = "marine_51a";
 //const char* password = "#6Lisbr@m40";
 //const char* ssid = "KPNBF3C06";
 //const char* password = "adLeR10+75kAk";
+
+//Server URL
+const char* serverName = "http://192.168.50.188/inserttestdata.php";
 
 // Inputs
 const char* PARAM_INPUT_1 = "relay";
