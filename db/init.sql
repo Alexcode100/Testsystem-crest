@@ -13,7 +13,6 @@ CREATE TABLE TestsTable (
     TestDate DATE NOT NULL,
     TestTime TIME NOT NULL,
     DeviceType VARCHAR(255) NOT NULL,
-    IDSensor INT NOT NULL
 );
 
 -- Create TestResults
@@ -22,6 +21,5 @@ CREATE TABLE TestResults (
     TestID INT NOT NULL,
     MeasurementType VARCHAR(255) NOT NULL,
     MeasurementValue VARCHAR(255) NOT NULL,
-    Result VARCHAR(255) NOT NULL,
     FOREIGN KEY (TestID) REFERENCES TestsTable(TestID) ON DELETE CASCADE
 );
