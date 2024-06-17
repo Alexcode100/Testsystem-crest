@@ -1,3 +1,4 @@
+//Test
 // Libraries
 #include "WiFi.h"
 #include "ESPAsyncWebSrv.h"
@@ -7,7 +8,7 @@
 #include "blinker.h"
 #include "USB.h"
 #include "USBHIDKeyboard.h"
-#include "HTTPClient.h"
+
 // Zoektermen
 // Init
 String Firmware;
@@ -173,7 +174,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     h12 {line-height: 2px; font-size: 4.0rem; margin: 0.1px;}
     p {font-size: 3.0rem;}
     body {max-width: 1920px; margin:0px auto; padding-bottom: 25px; background-color:#d9d9d9; transform: scale(0.8); transform-origin: top;}
-    
+
     .grid-container {
       display: grid;
       grid-template-rows: repeat(6, 40px); // 5 kolommen
@@ -459,38 +460,9 @@ const char index_html[] PROGMEM = R"rawliteral(
       text-align: center;
     }
     
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      font-size: 24px;
-      text-align: center;
-      outline: none;
-      color: #fff;
-      background-color: #4CAF50;
-      border: none;
-      border-radius: 5px;
-      box-shadow: 0 5px #999;
-      cursor: pointer;
-    }
-    .button:hover {background-color: #3e8e41}
-    .button:active {
-      background-color: #3e8e41;
-      box-shadow: 0 3px #666;
-      transform: translateY(4px);
-    }
-
   </style>
 </head>
 <body>
-<h2>ESP32 Web Server</h2>
-  <p><button class="button" onclick="incrementCounter()">Click Me!</button></p>
-  <script>
-    function incrementCounter() {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "/increment", true);
-      xhr.send();
-    }
-  </script>
   <h2>S.P.I.T.S.</h2>
   <div class="content">
     <div class="card">
@@ -813,8 +785,8 @@ void setup() {
   Keyboard.begin();
   USB.begin();
 
-  Timer1Min.setTime(60000);
-  Timer1Min2.setTime(60000);
+  Timer1Min.setTime(1000);
+  Timer1Min2.setTime(1000);
   TestsuiteChecker.setTime(60000);
   FirmwareChecker.setTime(20000);
   Timer5Min.setTime(270000);
@@ -855,30 +827,19 @@ void setup() {
   digitalWrite(RTU_9ohm, HIGH); // Relais met 9ohm inschakelen
   
   // Verbind met Wi-Fi
- WiFi.begin(ssid, password);
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Connecting to WiFi...");
+    Serial.println("S.P.I.T.S. WORDT GESTART");
+    Serial.println("Connecting to WiFi..");
   }
-  Serial.println("Connected to WiFi");
+
+  // Print ESP32 Lokaal IP-Adres
   Serial.println(WiFi.localIP());
 
   // Index webpagina
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", index_html);
-  });
-
-  // Handle increment request
-  server.on("/increment", HTTP_GET, [](AsyncWebServerRequest *request){
-    HTTPClient http;
-    http.begin("http://192.168.50.188/increment.php"); // Replace with your server IP
-    int httpCode = http.GET();
-    if(httpCode > 0) {
-        String payload = http.getString();
-        Serial.println(payload);
-    }
-    http.end();
-    request->send(200, "text/plain", "Incremented");
+    request->send_P(200, "text/html", index_html, processor);
   });
 
   server.on("/UPR_get", HTTP_GET, [] (AsyncWebServerRequest *request) {
