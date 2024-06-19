@@ -15,11 +15,17 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$imei = isset($_GET['imei']) ? $_GET['imei'] : '';
+
 // Fetch the data
 $sql = "SELECT t.TestID, t.TestDate, t.TestTime, t.DeviceType, r.MeasurementType, r.MeasurementValue 
         FROM teststable t
-        JOIN testresults r ON t.TestID = r.TestID
-        ORDER BY t.TestID, r.MeasurementType";
+        JOIN testresults r ON t.TestID = r.TestID";
+if (!empty($imei)) {
+    $sql .= " WHERE r.MeasurementType = 'IMEI' AND r.MeasurementValue = '$imei'";
+}
+$sql .= " ORDER BY t.TestID, r.MeasurementType";
+
 $result = $conn->query($sql);
 
 $tests = array();

@@ -196,79 +196,109 @@ const char index_html[] PROGMEM = R"rawliteral(
     p {font-size: 3.0rem;}
     body {max-width: 1920px; margin:0px auto; padding-bottom: 25px; background-color:#d9d9d9; transform: scale(0.8); transform-origin: top;}
     .container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start; /* Align items from the top */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
     }
 
+    /* Table container styling */
     .table-container {
-      margin: 20px;
-      width: 500px;
+        margin: 20px;
+        width: 500px;
     }
 
+    /* Data table styling */
     .data-table {
-      border-collapse: collapse;
-      width: 100%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
-      border-radius: 8px;
-      overflow: hidden;
+        border-collapse: collapse;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
     }
-
     .data-table th, .data-table td {
-      border: 1px solid #ddd;
-      padding: 12px;
+        border: 1px solid #ddd;
+        padding: 12px;
     }
-
     .data-table th {
-      background-color: #e0e0e0;
-      text-align: center;
+        background-color: #e0e0e0;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 1;
     }
-
     .data-table td {
-      text-align: center;
+        text-align: center;
     }
-
     .data-table tr:nth-child(even) {
-      background-color: #f9f9f9;
+        background-color: #f9f9f9;
     }
-
     .data-table tr:hover {
-      background-color: #f1f1f1;
+        background-color: #f1f1f1;
     }
-
     .data-table button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
     }
-
     .data-table button:hover {
-      background-color: #45a049;
+        background-color: #45a049;
     }
 
+    /* Scrollable table styling */
     .scrollable-table {
-      max-height: 400px; /* Ensure vertical scrolling */
-      overflow-y: auto; /* Vertical scroll only */
-      overflow-x: hidden; /* No horizontal scroll */
-      display: block;
+        max-height: 550px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: block;
     }
-
-    /* Hide scrollbar when not needed */
     .scrollable-table::-webkit-scrollbar {
-      width: 8px;
+        width: 8px;
     }
-
     .scrollable-table::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+    .scrollable-table::-webkit-scrollbar-track {
+        background: transparent;
     }
 
-    .scrollable-table::-webkit-scrollbar-track {
-      background: transparent;
+    /* Modern fintech input and button styling */
+    .filter-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+    }
+    .filter-container label {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .filter-container input {
+        width: 250px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .filter-container button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .filter-container button:hover {
+        background-color: #0056b3;
     }
 
     .grid-container {
@@ -756,90 +786,99 @@ const char index_html[] PROGMEM = R"rawliteral(
   }
 </script>
   <div class="container">
-    <div class="table-container">
-      <div class="scrollable-table">
-        <table id="data-table-left" class="data-table">
-          <thead>
-            <tr>
-              <th>Test</th>
-              <th>Datum</th>
-              <th>Tijd</th>
-              <th>Device Type</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+      <div class="filter-container">
+          <label for="imei-filter">IMEI Filter:</label>
+          <input type="text" id="imei-filter" name="imei-filter">
+          <button onclick="applyFilters()">Apply Filters</button>
       </div>
-    </div>
-    <div class="table-container">
-      <table id="data-table-right" class="data-table">
-        <thead>
-          <tr>
-            <th>Measurement Type</th>
-            <th>Measurement Value</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
+  </div>
+  <div class="container">
+      <div class="table-container">
+          <div class="scrollable-table">
+              <table id="data-table-left" class="data-table">
+                  <thead>
+                      <tr>
+                          <th>Test</th>
+                          <th>Datum</th>
+                          <th>Tijd</th>
+                          <th>Device Type</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+      <div class="table-container">
+          <table id="data-table-right" class="data-table" style="height: 550px;">
+              <thead>
+                  <tr>
+                      <th>Measurement Type</th>
+                      <th>Measurement Value</th>
+                  </tr>
+              </thead>
+              <tbody>
+              </tbody>
+          </table>
+      </div>
   </div>
 
   <script>
-    async function fetchData() {
-        const response = await fetch('http://192.168.50.188/fetchdata.php');
-        const data = await response.json();
-        const tableBodyLeft = document.getElementById('data-table-left').getElementsByTagName('tbody')[0];
+      async function fetchData(imei = '') {
+          const response = await fetch('http://192.168.50.188/fetchdata.php?imei=' + imei);
+          const data = await response.json();
+          const tableBodyLeft = document.getElementById('data-table-left').getElementsByTagName('tbody')[0];
 
-        // Clear existing rows in the left table
-        tableBodyLeft.innerHTML = '';
+          // Clear existing rows in the left table
+          tableBodyLeft.innerHTML = '';
 
-        // Populate left table with new data (first 12 records)
-        data.slice(0, 12).forEach(test => {
-            const row = tableBodyLeft.insertRow();
-            row.insertCell(0).innerText = test.TestID;
-            row.insertCell(1).innerText = test.TestDate;
-            row.insertCell(2).innerText = test.TestTime;
-            row.insertCell(3).innerText = test.DeviceType;
+          // Populate left table with new data (first 12 records)
+          data.slice(0, 12).forEach(test => {
+              const row = tableBodyLeft.insertRow();
+              row.insertCell(0).innerText = test.TestID;
+              row.insertCell(1).innerText = test.TestDate;
+              row.insertCell(2).innerText = test.TestTime;
+              row.insertCell(3).innerText = test.DeviceType;
 
-            // Create "Meetwaardes" button
-            const moreInfoCell = row.insertCell(4);
-            const button = document.createElement('button');
-            button.innerText = 'Meetwaardes';
-            button.onclick = () => showMoreInfo(test.Results);
-            moreInfoCell.appendChild(button);
-        });
+              // Create "Meetwaardes" button
+              const moreInfoCell = row.insertCell(4);
+              const button = document.createElement('button');
+              button.innerText = 'Meetwaardes';
+              button.onclick = () => showMoreInfo(test.Results);
+              moreInfoCell.appendChild(button);
+          });
 
-        // Ensure there are always 10 rows
-        for (let i = tableBodyLeft.rows.length; i < 10; i++) {
-            const row = tableBodyLeft.insertRow();
-            for (let j = 0; j < 5; j++) {
-                row.insertCell(j).innerHTML = '&nbsp;';
-            }
-        }
-    }
+          // Ensure there are always 10 rows
+          for (let i = tableBodyLeft.rows.length; i < 10; i++) {
+              const row = tableBodyLeft.insertRow();
+              for (let j = 0; j < 5; j++) {
+                  row.insertCell(j).innerHTML = '&nbsp;';
+              }
+          }
+      }
 
-    function showMoreInfo(results) {
-        const tableBodyRight = document.getElementById('data-table-right').getElementsByTagName('tbody')[0];
-        
-        // Clear existing rows in the right table
-        tableBodyRight.innerHTML = '';
+      function showMoreInfo(results) {
+          const tableBodyRight = document.getElementById('data-table-right').getElementsByTagName('tbody')[0];
+          
+          // Clear existing rows in the right table
+          tableBodyRight.innerHTML = '';
 
-        // Populate right table with results
-        results.forEach(result => {
-            const row = tableBodyRight.insertRow();
-            row.insertCell(0).innerText = result.MeasurementType;
-            row.insertCell(1).innerText = result.MeasurementValue;
-        });
-    }
+          // Populate right table with results
+          results.forEach(result => {
+              const row = tableBodyRight.insertRow();
+              row.insertCell(0).innerText = result.MeasurementType;
+              row.insertCell(1).innerText = result.MeasurementValue;
+          });
+      }
 
-    // Fetch data every 5 seconds
-    setInterval(fetchData, 5000);
+      function applyFilters() {
+          const imei = document.getElementById('imei-filter').value;
+          fetchData(imei);
+      }
 
-    // Initial fetch
-    fetchData();
+      // Initial fetch
+      fetchData();
   </script>
 </body>
 </html>
