@@ -1,9 +1,12 @@
+-- V1__Initial_setup.sql
+
+-- Create the database if it does not exist
 CREATE DATABASE IF NOT EXISTS TestSystemDBCrest;
 
 -- Use the newly created database
 USE TestSystemDBCrest;
 
--- Drop Tables if they exist
+-- Drop tables if they exist
 DROP TABLE IF EXISTS TestResults;
 DROP TABLE IF EXISTS TestsTable;
 
@@ -13,6 +16,7 @@ CREATE TABLE TestsTable (
     TestDate DATE NOT NULL,
     TestTime TIME NOT NULL,
     DeviceType VARCHAR(255) NOT NULL,
+    IDSensor INT NOT NULL
 );
 
 -- Create TestResults
@@ -21,5 +25,6 @@ CREATE TABLE TestResults (
     TestID INT NOT NULL,
     MeasurementType VARCHAR(255) NOT NULL,
     MeasurementValue VARCHAR(255) NOT NULL,
+    Result VARCHAR(255) NOT NULL,
     FOREIGN KEY (TestID) REFERENCES TestsTable(TestID) ON DELETE CASCADE
 );
