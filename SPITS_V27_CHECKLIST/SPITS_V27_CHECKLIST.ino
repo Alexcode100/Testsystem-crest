@@ -195,6 +195,9 @@ const char index_html[] PROGMEM = R"rawliteral(
     h12 {line-height: 2px; font-size: 4.0rem; margin: 0.1px;}
     p {font-size: 3.0rem;}
     body {max-width: 1920px; margin:0px auto; padding-bottom: 25px; background-color:#d9d9d9; transform: scale(0.8); transform-origin: top;}
+    table {width: 100%; border-collapse: collapse;}
+    th, td {border: 1px solid #ddd; padding: 8px;}
+    th {background-color: #f2f2f2;}
 
     .grid-container {
       display: grid;
@@ -484,6 +487,50 @@ const char index_html[] PROGMEM = R"rawliteral(
   </style>
 </head>
 <body>
+  <h2>Test Data</h2>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Test</th>
+        <th>Datum</th>
+        <th>Tijd</th>
+        <th>Device Type</th>
+        <th>Measurement Type</th>
+        <th>Measurement Value</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <script>
+    async function fetchData() {
+      const response = await fetch('http://192.168.50.188/fetchdata.php');
+      const data = await response.json();
+      const tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+
+      // Clear existing rows
+      tableBody.innerHTML = '';
+
+      // Populate table with new data
+      data.forEach(test => {
+        test.Results.forEach(result => {
+          const row = tableBody.insertRow();
+          row.insertCell(0).innerText = test.TestID;
+          row.insertCell(1).innerText = test.TestDate;
+          row.insertCell(2).innerText = test.TestTime;
+          row.insertCell(3).innerText = test.DeviceType;
+          row.insertCell(4).innerText = result.MeasurementType;
+          row.insertCell(5).innerText = result.MeasurementValue;
+        });
+      });
+    }
+
+    // Fetch data every 5 seconds
+    setInterval(fetchData, 5000);
+
+    // Initial fetch
+    fetchData();
+  </script>
   <h2>S.P.I.T.S.</h2>
   <div class="content">
     <div class="card">
