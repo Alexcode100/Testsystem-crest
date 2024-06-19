@@ -1,4 +1,7 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+
 $servername = "localhost"; // Change if needed
 $username = "root"; // Change if needed
 $password = ""; // Change if needed
