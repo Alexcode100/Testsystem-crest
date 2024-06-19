@@ -195,9 +195,81 @@ const char index_html[] PROGMEM = R"rawliteral(
     h12 {line-height: 2px; font-size: 4.0rem; margin: 0.1px;}
     p {font-size: 3.0rem;}
     body {max-width: 1920px; margin:0px auto; padding-bottom: 25px; background-color:#d9d9d9; transform: scale(0.8); transform-origin: top;}
-    table {width: 100%; border-collapse: collapse;}
-    th, td {border: 1px solid #ddd; padding: 8px;}
-    th {background-color: #f2f2f2;}
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Align items from the top */
+    }
+
+    .table-container {
+      margin: 20px;
+      width: 500px;
+    }
+
+    .data-table {
+      border-collapse: collapse;
+      width: 100%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+    }
+
+    .data-table th {
+      background-color: #e0e0e0;
+      text-align: center;
+    }
+
+    .data-table td {
+      text-align: center;
+    }
+
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .data-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .data-table button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .data-table button:hover {
+      background-color: #45a049;
+    }
+
+    .scrollable-table {
+      max-height: 400px; /* Ensure vertical scrolling */
+      overflow-y: auto; /* Vertical scroll only */
+      overflow-x: hidden; /* No horizontal scroll */
+      display: block;
+    }
+
+    /* Hide scrollbar when not needed */
+    .scrollable-table::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
     .grid-container {
       display: grid;
@@ -487,50 +559,6 @@ const char index_html[] PROGMEM = R"rawliteral(
   </style>
 </head>
 <body>
-  <h2>Test Data</h2>
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>Test</th>
-        <th>Datum</th>
-        <th>Tijd</th>
-        <th>Device Type</th>
-        <th>Measurement Type</th>
-        <th>Measurement Value</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <script>
-    async function fetchData() {
-      const response = await fetch('http://192.168.50.188/fetchdata.php');
-      const data = await response.json();
-      const tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
-
-      // Clear existing rows
-      tableBody.innerHTML = '';
-
-      // Populate table with new data
-      data.forEach(test => {
-        test.Results.forEach(result => {
-          const row = tableBody.insertRow();
-          row.insertCell(0).innerText = test.TestID;
-          row.insertCell(1).innerText = test.TestDate;
-          row.insertCell(2).innerText = test.TestTime;
-          row.insertCell(3).innerText = test.DeviceType;
-          row.insertCell(4).innerText = result.MeasurementType;
-          row.insertCell(5).innerText = result.MeasurementValue;
-        });
-      });
-    }
-
-    // Fetch data every 5 seconds
-    setInterval(fetchData, 5000);
-
-    // Initial fetch
-    fetchData();
-  </script>
   <h2>S.P.I.T.S.</h2>
   <div class="content">
     <div class="card">
@@ -727,6 +755,92 @@ const char index_html[] PROGMEM = R"rawliteral(
      xhr.send();
   }
 </script>
+  <div class="container">
+    <div class="table-container">
+      <div class="scrollable-table">
+        <table id="data-table-left" class="data-table">
+          <thead>
+            <tr>
+              <th>Test</th>
+              <th>Datum</th>
+              <th>Tijd</th>
+              <th>Device Type</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="table-container">
+      <table id="data-table-right" class="data-table">
+        <thead>
+          <tr>
+            <th>Measurement Type</th>
+            <th>Measurement Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function fetchData() {
+        const response = await fetch('http://192.168.50.188/fetchdata.php');
+        const data = await response.json();
+        const tableBodyLeft = document.getElementById('data-table-left').getElementsByTagName('tbody')[0];
+
+        // Clear existing rows in the left table
+        tableBodyLeft.innerHTML = '';
+
+        // Populate left table with new data (first 12 records)
+        data.slice(0, 12).forEach(test => {
+            const row = tableBodyLeft.insertRow();
+            row.insertCell(0).innerText = test.TestID;
+            row.insertCell(1).innerText = test.TestDate;
+            row.insertCell(2).innerText = test.TestTime;
+            row.insertCell(3).innerText = test.DeviceType;
+
+            // Create "Meetwaardes" button
+            const moreInfoCell = row.insertCell(4);
+            const button = document.createElement('button');
+            button.innerText = 'Meetwaardes';
+            button.onclick = () => showMoreInfo(test.Results);
+            moreInfoCell.appendChild(button);
+        });
+
+        // Ensure there are always 10 rows
+        for (let i = tableBodyLeft.rows.length; i < 10; i++) {
+            const row = tableBodyLeft.insertRow();
+            for (let j = 0; j < 5; j++) {
+                row.insertCell(j).innerHTML = '&nbsp;';
+            }
+        }
+    }
+
+    function showMoreInfo(results) {
+        const tableBodyRight = document.getElementById('data-table-right').getElementsByTagName('tbody')[0];
+        
+        // Clear existing rows in the right table
+        tableBodyRight.innerHTML = '';
+
+        // Populate right table with results
+        results.forEach(result => {
+            const row = tableBodyRight.insertRow();
+            row.insertCell(0).innerText = result.MeasurementType;
+            row.insertCell(1).innerText = result.MeasurementValue;
+        });
+    }
+
+    // Fetch data every 5 seconds
+    setInterval(fetchData, 5000);
+
+    // Initial fetch
+    fetchData();
+  </script>
 </body>
 </html>
 )rawliteral";
