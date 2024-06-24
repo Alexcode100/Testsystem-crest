@@ -1,0 +1,102 @@
+Instruction Manual: Setting Up a Daily MySQL Backup Script
+
+ Prerequisites:
+- Ensure you have MySQL installed and accessible via the command line.
+- Create a MySQL configuration file with your credentials (`my.cnf`).
+- Have your batch script (`backup_database.bat`) ready.
+
+ Step 1: Create a MySQL Configuration File
+1. Open Notepad or any text editor.
+2. Copy and paste the following content, adjusting the values as necessary:
+
+    ```ini
+    [client]
+    user=root
+    password=your_password
+    host=host
+    ```
+
+3. Save the file as `my.cnf` in a secure directory, e.g., `C:\secure_directory\my.cnf`.
+
+ Step 2: Create the Batch Script
+1. Open Notepad or any text editor.
+2. Copy and paste the following script:
+
+    ```batch
+    @echo off
+    set db_name=
+    set backup_path=
+    set cnf_path=
+
+    set year=%date:~10,4%
+    set month=%date:~4,2%
+    set day=%date:~7,2%
+    set hour=%time:~0,2%
+    set minute=%time:~3,2%
+    set second=%time:~6,2%
+
+    REM Remove spaces from time
+    if "%hour:~0,1%" == " " set hour=0%hour:~1,1%
+
+    set datetime=%year%%month%%day%%hour%%minute%%second%
+
+    mysqldump --defaults-extra-file=%cnf_path% %db_name% > "%backup_path%\%db_name%-%datetime%.sql"
+
+    echo Backup completed: %backup_path%\%db_name%-%datetime%.sql
+    ```
+
+3. Save the file as `backup_database.bat` in a desired location, e.g., `C:\path\to\your\script\backup_database.bat`.
+
+ Step 3: Set Up the Task in Task Scheduler
+
+1. Open Task Scheduler:
+    - Press `Windows + R`, type `taskschd.msc`, and press `Enter`.
+
+2. Create a New Task:
+    - In the Task Scheduler, click on "Create Task" on the right side.
+
+3. General Tab:
+    - Name: Enter a name for your task, e.g., "MySQL Backup Script".
+    - Security Options:
+        - Choose "Run whether user is logged on or not".
+        - Check "Run with highest privileges".
+
+4. Triggers Tab:
+    - Click "New...".
+    - Begin the task: Select "Daily".
+    - Start: Set the time to `3:00:00 PM`.
+    - Ensure "Repeat task every" is not set, since you want it to run only once daily.
+    - Click "OK" to save the trigger.
+
+5. Actions Tab:
+    - Click "New...".
+    - Action: Select "Start a program".
+    - Program/script: Browse to your `backup_database.bat` file.
+    - Start in (optional): Specify the directory where the script resides (optional but recommended), e.g., `C:\path\to\your\script`.
+    - Click "OK" to save the action.
+
+6. Conditions Tab:
+    - Adjust any conditions as necessary (e.g., only start the task if the computer is idle).
+
+7. Settings Tab:
+    - Check "Allow task to be run on demand".
+    - Check "Run task as soon as possible after a scheduled start is missed".
+    - Check "If the task fails, restart every" and set an interval, e.g., 1 minute, and attempt up to 3 times.
+    - Click "OK" to save the settings.
+
+8. Finish:
+    - Click "OK" to save the task.
+    - You will be prompted to enter your Windows user account password. Enter the password and click "OK".
+
+ Verifying the Task
+1. Manual Run:
+    - Right-click on your task in the Task Scheduler and select "Run".
+    - Verify that the task runs successfully and that the backup file is created in the specified directory.
+
+2. Check Task History:
+    - In the Task Scheduler, select your task.
+    - Click on the "History" tab to see the log of task executions.
+    - Look for any errors or messages that indicate the task’s status.
+
+ Conclusion
+By following these steps, you can set up a scheduled task to run your MySQL backup script every day at 3 PM. Ensure that you verify the task to confirm it is working correctly.
