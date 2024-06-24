@@ -15,11 +15,27 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$imei = isset($_GET['imei']) ? $_GET['imei'] : '';
+$hours = isset($_GET['hours']) ? intval($_GET['hours']) : 0;
+
 // Fetch the data
 $sql = "SELECT t.TestID, t.TestDate, t.TestTime, t.DeviceType, r.MeasurementType, r.MeasurementValue 
         FROM teststable t
-        JOIN testresults r ON t.TestID = r.TestID
-        ORDER BY t.TestID, r.MeasurementType";
+        JOIN testresults r ON t.TestID = r.TestID";
+
+$whereClauses = [];
+if (!empty($imei)) {
+    $whereClauses[] = "r.MeasurementType = 'IMEI' AND r.MeasurementValue = '$imei'";
+}
+if ($hours > 0) {
+    $whereClauses[] = "t.TestDate >= DATE_SUB(NOW(), INTERVAL $hours HOUR)";
+}
+if (!empty($whereClauses)) {
+    $sql .= " WHERE " . implode(' AND ', $whereClauses);
+}
+
+$sql .= " ORDER BY t.TestDate DESC, t.TestTime DESC, t.TestID, r.MeasurementType";
+
 $result = $conn->query($sql);
 
 $tests = array();
