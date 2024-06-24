@@ -825,60 +825,60 @@ const char index_html[] PROGMEM = R"rawliteral(
   </div>
 
   <script>
-      async function fetchData(imei = '') {
-          const response = await fetch('http://192.168.50.188/fetchdata.php?imei=' + imei);
-          const data = await response.json();
-          const tableBodyLeft = document.getElementById('data-table-left').getElementsByTagName('tbody')[0];
+    async function fetchData(imei = '') {
+        const response = await fetch('http://192.168.50.188/fetchdata.php?imei=' + imei);
+        const data = await response.json();
+        const tableBodyLeft = document.getElementById('data-table-left').getElementsByTagName('tbody')[0];
 
-          // Clear existing rows in the left table
-          tableBodyLeft.innerHTML = '';
+        // Clear existing rows in the left table
+        tableBodyLeft.innerHTML = '';
 
-          // Populate left table with new data (first 12 records)
-          data.slice(0, 12).forEach(test => {
-              const row = tableBodyLeft.insertRow();
-              row.insertCell(0).innerText = test.TestID;
-              row.insertCell(1).innerText = test.TestDate;
-              row.insertCell(2).innerText = test.TestTime;
-              row.insertCell(3).innerText = test.DeviceType;
+        // Populate left table with new data (first 12 records)
+        data.slice(0, 100).forEach(test => {
+            const row = tableBodyLeft.insertRow();
+            row.insertCell(0).innerText = test.TestID;
+            row.insertCell(1).innerText = test.TestDate;
+            row.insertCell(2).innerText = test.TestTime;
+            row.insertCell(3).innerText = test.DeviceType;
 
-              // Create "Meetwaardes" button
-              const moreInfoCell = row.insertCell(4);
-              const button = document.createElement('button');
-              button.innerText = 'Meetwaardes';
-              button.onclick = () => showMoreInfo(test.Results);
-              moreInfoCell.appendChild(button);
-          });
+            // Create "Meetwaardes" button
+            const moreInfoCell = row.insertCell(4);
+            const button = document.createElement('button');
+            button.innerText = 'Meetwaardes';
+            button.onclick = () => showMoreInfo(test.Results);
+            moreInfoCell.appendChild(button);
+        });
 
-          // Ensure there are always 10 rows
-          for (let i = tableBodyLeft.rows.length; i < 10; i++) {
-              const row = tableBodyLeft.insertRow();
-              for (let j = 0; j < 5; j++) {
-                  row.insertCell(j).innerHTML = '&nbsp;';
-              }
-          }
-      }
+        // Ensure there are always 10 rows
+        for (let i = tableBodyLeft.rows.length; i < 10; i++) {
+            const row = tableBodyLeft.insertRow();
+            for (let j = 0; j < 5; j++) {
+                row.insertCell(j).innerHTML = '&nbsp;';
+            }
+        }
+    }
 
-      function showMoreInfo(results) {
-          const tableBodyRight = document.getElementById('data-table-right').getElementsByTagName('tbody')[0];
-          
-          // Clear existing rows in the right table
-          tableBodyRight.innerHTML = '';
+    function showMoreInfo(results) {
+        const tableBodyRight = document.getElementById('data-table-right').getElementsByTagName('tbody')[0];
+        
+        // Clear existing rows in the right table
+        tableBodyRight.innerHTML = '';
 
-          // Populate right table with results
-          results.forEach(result => {
-              const row = tableBodyRight.insertRow();
-              row.insertCell(0).innerText = result.MeasurementType;
-              row.insertCell(1).innerText = result.MeasurementValue;
-          });
-      }
+        // Populate right table with results
+        results.forEach(result => {
+            const row = tableBodyRight.insertRow();
+            row.insertCell(0).innerText = result.MeasurementType;
+            row.insertCell(1).innerText = result.MeasurementValue;
+        });
+    }
 
-      function applyFilters() {
-          const imei = document.getElementById('imei-filter').value;
-          fetchData(imei);
-      }
+    function applyFilters() {
+        const imei = document.getElementById('imei-filter').value;
+        fetchData(imei);
+    }
 
-      // Initial fetch
-      fetchData();
+    // Initial fetch
+    fetchData();
   </script>
 </body>
 </html>
