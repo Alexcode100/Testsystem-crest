@@ -1,7 +1,7 @@
 <?php
-$servername = "localhost"; // Change if needed
-$username = "root"; // Change if needed
-$password = ""; // Change if needed
+$servername = "localhost";
+$username = "root";
+$password = "";
 $dbname = "testsystemdbcrest";
 
 // Create a connection to the database
@@ -14,54 +14,41 @@ if ($conn->connect_error) {
 
 // Get the data from the POST request
 if (isset($_POST['imei'])) {
-  $imei = $_POST['imei'];
-  $iccid = $_POST['iccid'];
-  $firmware = $_POST['firmware'];
-  $vbatt = $_POST['vbatt'];
-  $rtc_con = $_POST['rtc_con'];
-  $flash_con = $_POST['flash_con'];
-  $network = $_POST['network'];
-  $revision = $_POST['revision'];
-  $imsi = $_POST['imsi'];
-  $rtc_sync = $_POST['rtc_sync'];
-  $sht20 = $_POST['sht20'];
-  $vb86 = $_POST['vb86'];
-  $klay = $_POST['klay'];
-  $deviceType = $_POST['deviceType'];
+  $imei = filter_input(INPUT_POST, 'imei', FILTER_SANITIZE_STRING);
+  $iccid = filter_input(INPUT_POST, 'iccid', FILTER_SANITIZE_STRING);
+  $firmware = filter_input(INPUT_POST, 'firmware', FILTER_SANITIZE_STRING);
+  $vbatt = filter_input(INPUT_POST, 'vbatt', FILTER_SANITIZE_STRING);
+  $rtc_con = filter_input(INPUT_POST, 'rtc_con', FILTER_SANITIZE_STRING);
+  $flash_con = filter_input(INPUT_POST, 'flash_con', FILTER_SANITIZE_STRING);
+  $network = filter_input(INPUT_POST, 'network', FILTER_SANITIZE_STRING);
+  $revision = filter_input(INPUT_POST, 'revision', FILTER_SANITIZE_STRING);
+  $imsi = filter_input(INPUT_POST, 'imsi', FILTER_SANITIZE_STRING);
+  $rtc_sync = filter_input(INPUT_POST, 'rtc_sync', FILTER_SANITIZE_STRING);
+  $sht20 = filter_input(INPUT_POST, 'sht20', FILTER_SANITIZE_STRING);
+  $vb86 = filter_input(INPUT_POST, 'vb86', FILTER_SANITIZE_STRING);
+  $klay = filter_input(INPUT_POST, 'klay', FILTER_SANITIZE_STRING);
+  $deviceType = filter_input(INPUT_POST, 'deviceType', FILTER_SANITIZE_STRING);
 
-  // Insert the test into the database
-  $sql = "INSERT INTO teststable (TestDate, TestTime, DeviceType) VALUES (NOW(), NOW(), '$deviceType')";
+  // Insert the test into the database using prepared statements
+  $stmt = $conn->prepare("INSERT INTO teststable (TestDate, TestTime, DeviceType) VALUES (NOW(), NOW(), ?)");
+  $stmt->bind_param("s", $deviceType);
+  $stmt->execute();
 
-  if ($conn->query($sql) === TRUE) {
-    $testID = $conn->insert_id; // Get the TestID of the inserted test
+  if ($stmt->affected_rows > 0) {
+    $testID = $stmt->insert_id; // Get the TestID of the inserted test
 
-    // Insert the test results into the database
-    $results = [
-      'IMEI' => $imei,
-      'ICCID' => $iccid,
-      'Firmware' => $firmware,
-      'Vbatt' => $vbatt,
-      'RTC_con' => $rtc_con,
-      'Flash_con' => $flash_con,
-      'Network' => $network,
-      'Revision' => $revision,
-      'IMSI' => $imsi,
-      'RTC_sync' => $rtc_sync,
-      'SHT20' => $sht20,
-      'VB86' => $vb86,
-      'Klay' => $klay
-    ];
-
-    foreach ($results as $type => $value) {
-      $sql = "INSERT INTO testresults (TestID, MeasurementType, MeasurementValue) VALUES ('$testID', '$type', '$value')";
-      if ($conn->query($sql) !== TRUE) {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-      }
+    // Insert the test results into the database using prepared statements
+    $stmt = $conn->prepare("INSERT INTO testresults (TestID, MeasurementType, MeasurementValue) VALUES (?, ?, ?)");
+    foreach (['IMEI' => $imei, 'ICCID' => $iccid, 'Firmware' => $firmware, 'Vbatt' => $vbatt, 'RTC_con' => $rtc_con,
+              'Flash_con' => $flash_con, 'Network' => $network, 'Revision' => $revision, 'IMSI' => $imsi, 
+              'RTC_sync' => $rtc_sync, 'SHT20' => $sht20, 'VB86' => $vb86, 'Klay' => $klay] as $type => $value) {
+      $stmt->bind_param("iss", $testID, $type, $value);
+      $stmt->execute();
     }
 
     echo "New record created successfully";
   } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . $conn->error;
   }
 } else {
   echo "No data received";

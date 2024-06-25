@@ -1,0 +1,3 @@
+Datum: 24-06-2024
+Tijd: 14:30
+Opmerking van Patrick: "Voeg input validatie toe aan je PHP script om ongewenste en potentieel schadelijke invoer te voorkomen."
