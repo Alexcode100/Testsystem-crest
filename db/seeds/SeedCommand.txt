@@ -1,0 +1,1 @@
+mysql -u root -p testsystemdbcrest < "C:\Users\barde\OneDrive\Bureaublad\TestOmgevingProjectCRESTStage\S.P.I.T.S. 2\Code\db\seeds\seed_testdata.sql"
