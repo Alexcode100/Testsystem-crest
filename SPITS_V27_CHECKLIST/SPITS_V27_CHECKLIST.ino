@@ -826,7 +826,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 
   <script>
     async function fetchData(imei = '') {
-        const response = await fetch('http://192.168.50.188/inserttestdata.php=' + imei);
+        const response = await fetch('http://192.168.50.188/fetchdata.php?imei=' + imei);
         const data = await response.json();
         const tableBodyLeft = document.getElementById('data-table-left').getElementsByTagName('tbody')[0];
 
@@ -1655,6 +1655,9 @@ void Install_Testsuite() {
   if (TestsuiteChecker.ding()) {
     if (Testsuite_Success == true) {
       Serial.println("ALLE FLAGS GEVONDEN!");
+      sendData(capturedIMEI, capturedICCID, capturedFirmware, capturedVbatt, capturedRTC_con, 
+           capturedFlash_con, capturedNetwork, capturedRevision, capturedIMSI, capturedRTC_sync, 
+           capturedSHT20, capturedVB86, capturedKlay, deviceType);
       Serial.print(Tests);
       Serial.print(" ");
       Serial.println(TestsuiteFlagArrayOK);
@@ -1854,9 +1857,6 @@ void Install_Firmware() {
       printer.setDefault(); // Printer terugzetten op default
       Meting2_Check = "Stroomverbruik < 100μA: &#9989";
       SPITS_Status = "<span style=color:#4cd43d;font-weight:bold>SUCCESS</span>";
-      sendData(capturedIMEI, capturedICCID, capturedFirmware, capturedVbatt, capturedRTC_con, 
-           capturedFlash_con, capturedNetwork, capturedRevision, capturedIMSI, capturedRTC_sync, 
-           capturedSHT20, capturedVB86, capturedKlay, deviceType);
       digitalWrite(SL_ORANJE, LOW);
       digitalWrite(SL_GROEN, HIGH);
       digitalWrite(SL_BUZZER, HIGH);
